@@ -75,21 +75,21 @@ typedef struct
 	__vo uint32_t ODR;
 	__vo uint32_t BSRR;
 	__vo uint32_t LCKR;
-	__vo uint32_t AFLR;
-	__vo uint32_t AFRH;
+	__vo uint32_t AFR[2];
 	__vo uint32_t BRR;
 	__vo uint32_t ASCR;
 
 }GPIO_RegDef_t;
 
 
-#define GPIOA 				(GPIO_RegDef*)GPIOA_BASE_ADD
-#define GPIOB 				(GPIO_RegDef*)GPIOB_BASE_ADD
-#define GPIOC 				(GPIO_RegDef*)GPIOC_BASE_ADD
-#define GPIOD 				(GPIO_RegDef*)GPIOD_BASE_ADD
-#define GPIOE 				(GPIO_RegDef*)GPIOE_BASE_ADD
-#define GPIOF 				(GPIO_RegDef*)GPIOF_BASE_ADD
-#define GPIOG 				(GPIO_RegDef*)GPIOG_BASE_ADD
+#define GPIOA 				(GPIO_RegDef_t*)GPIOA_BASE_ADD
+#define GPIOB 				(GPIO_RegDef_t*)GPIOB_BASE_ADD
+#define GPIOC 				(GPIO_RegDef_t*)GPIOC_BASE_ADD
+#define GPIOD 				(GPIO_RegDef_t*)GPIOD_BASE_ADD
+#define GPIOE 				(GPIO_RegDef_t*)GPIOE_BASE_ADD
+#define GPIOF 				(GPIO_RegDef_t*)GPIOF_BASE_ADD
+#define GPIOG 				(GPIO_RegDef_t*)GPIOG_BASE_ADD
+#define GPIOH 				(GPIO_RegDef_t*)GPIOH_BASE_ADD
 
 typedef struct
 {
@@ -135,7 +135,55 @@ typedef struct
 	__vo uint32_t CCIPR2;			//0x9C
 }RCC_RegDef_t;
 
-#define RCC 			(RCC_RegDef*)RCC_BASE_ADD
+#define RCC 			((RCC_RegDef_t*)RCC_BASE_ADD)
 
+
+
+
+/*Macros for enabling PERIPHERAL CLK*/
+
+#define GPIOA_PCLK_EN()		(RCC->AHB2_ENR|=(1<<0))
+#define GPIOB_PCLK_EN()		(RCC->AHB2_ENR|=(1<<1))
+#define GPIOC_PCLK_EN()		(RCC->AHB2_ENR|=(1<<2))
+#define GPIOD_PCLK_EN()		(RCC->AHB2_ENR|=(1<<3))
+#define GPIOE_PCLK_EN()		(RCC->AHB2_ENR|=(1<<4))
+#define GPIOF_PCLK_EN()		(RCC->AHB2_ENR|=(1<<5))
+#define GPIOG_PCLK_EN()		(RCC->AHB2_ENR|=(1<<6))
+#define GPIOH_PCLK_EN()		(RCC->AHB2_ENR|=(1<<7))
+
+
+#define I2C3_PCLK_EN()		(RCC->APB1ENR1|=(1<<23))
+#define I2C2_PCLK_EN()		(RCC->APB1ENR1|=(1<<22))
+#define I2C1_PCLK_EN()		(RCC->APB1ENR1|=(1<<21))
+#define SPI2_PCLK_EN()		(RCC->APB1ENR1|=(1<<14))
+#define SPI3_PCLK_EN()		(RCC->APB1ENR1|=(1<<15))
+#define UART5_PCLK_EN()		(RCC->APB1ENR1|=(1<<20))
+#define UART4_PCLK_EN()		(RCC->APB1ENR1|=(1<<19))
+#define USART3_PCLK_EN()	(RCC->APB1ENR1|=(1<<18))
+#define USART2_PCLK_EN()	(RCC->APB1ENR1|=(1<<17))
+
+#define SPI1_PLCK_EN()		(RCC->APB2ENR|=(1<<12))
+#define USART1_PCLK_EN()	(RCC->APB2ENR|=(1<<14))
+#define USART1_PCLK_EN()	(RCC->APB2ENR|=(1<<14))
+#define SYSCFG_PCLK_EN()	(RCC->APB2ENR|=(1<<0))
+
+
+/*De-Init functions*/
+#define GPIOA_RST()			do{(RCC->AHB2RSTR|=(1<<0));(RCC->AHB2RSTR&=~(1<<0));}while(0)
+#define GPIOB_RST()			do{(RCC->AHB2RSTR|=(1<<1));(RCC->AHB2RSTR&=~(1<<1));}while(0)
+#define GPIOC_RST()			do{(RCC->AHB2RSTR|=(1<<2));(RCC->AHB2RSTR&=~(1<<2));}while(0)
+#define GPIOD_RST()			do{(RCC->AHB2RSTR|=(1<<3));(RCC->AHB2RSTR&=~(1<<3));}while(0)
+#define GPIOE_RST()			do{(RCC->AHB2RSTR|=(1<<4));(RCC->AHB2RSTR&=~(1<<4));}while(0)
+#define GPIOF_RST()			do{(RCC->AHB2RSTR|=(1<<5));(RCC->AHB2RSTR&=~(1<<5));}while(0)
+#define GPIOG_RST()			do{(RCC->AHB2RSTR|=(1<<6));(RCC->AHB2RSTR&=~(1<<6));}while(0)
+#define GPIOH_RST()			do{(RCC->AHB2RSTR|=(1<<7));(RCC->AHB2RSTR&=~(1<<7));}while(0)
+
+
+#define ENABLE 				1
+#define DISABLE 			0
+#define SET 				ENABLE
+#define RESET 				DISABLE
+#define GPIO_PIN_SET		SET
+#define GPIO_PIN_RESET		RESET
 
 #endif /* INC_STM32L476XX_H_ */
