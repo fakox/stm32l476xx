@@ -26,7 +26,7 @@
 #endif
 
 void delay(){
-	for (uint32_t i=0; i<250000;i++);
+	for (uint32_t i=0; i<120000;i++);
 }
 int main(void)
 {
@@ -36,20 +36,26 @@ int main(void)
     GPIOLed_Handle.GPIO_PinConfig.GPIO_OPType=GPIO_OPTYPE_PP;
     GPIOLed_Handle.GPIO_PinConfig.GPIO_PinSpeed=GPIO_SPEED_HIGH;
     GPIOLed_Handle.GPIO_PinConfig.GPIO_PinPuPdControl=GPIO_PIN_NOPU_NOPD;
-
     GPIOLed_Handle.pGPIOx=GPIOA;
-
     GPIO_PeriCloclControl(GPIOA, ENABLE);
-
     GPIO_Init(&GPIOLed_Handle);
 
+    GPIO_Handle_t GPIOButton_Handle;
+    GPIOButton_Handle.GPIO_PinConfig.GPIO_PinNumber=GPIO_PIN_9;
+    GPIOButton_Handle.GPIO_PinConfig.GPIO_PinMode=GPIO_MODE_INPUT;
+    GPIOButton_Handle.GPIO_PinConfig.GPIO_PinSpeed=GPIO_SPEED_HIGH;
+    GPIOButton_Handle.GPIO_PinConfig.GPIO_PinPuPdControl=GPIO_PIN_NOPU_NOPD;
+    GPIOButton_Handle.pGPIOx=GPIOA;
+    GPIO_PeriCloclControl(GPIOA, ENABLE);
+    GPIO_Init(&GPIOButton_Handle);
+
     while(1){
-    	GPIO_ToggleOutputPin(GPIOA,GPIO_PIN_5);
-    	delay();
+    	if(GPIO_ReadFromInputPin(GPIOA,GPIO_PIN_9)==0){
+    		GPIO_ToggleOutputPin(GPIOA,GPIO_PIN_5);
+    		delay();
+    	}
+
     }
-
-
-
     return 0;
 
 }
