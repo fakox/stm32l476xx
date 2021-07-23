@@ -20,12 +20,36 @@
 #include <stdint.h>
 #include "stm32l476xx.h"
 
+
 #if !defined(__SOFT_FP__) && defined(__ARM_FP)
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 
+void delay(){
+	for (uint32_t i=0; i<250000;i++);
+}
 int main(void)
 {
-    /* Loop forever */
-	for(;;);
+    GPIO_Handle_t GPIOLed_Handle;
+    GPIOLed_Handle.GPIO_PinConfig.GPIO_PinNumber=GPIO_PIN_5;
+    GPIOLed_Handle.GPIO_PinConfig.GPIO_PinMode=GPIO_MODE_GEN_OUTPUT;
+    GPIOLed_Handle.GPIO_PinConfig.GPIO_OPType=GPIO_OPTYPE_PP;
+    GPIOLed_Handle.GPIO_PinConfig.GPIO_PinSpeed=GPIO_SPEED_HIGH;
+    GPIOLed_Handle.GPIO_PinConfig.GPIO_PinPuPdControl=GPIO_PIN_NOPU_NOPD;
+
+    GPIOLed_Handle.pGPIOx=GPIOA;
+
+    GPIO_PeriCloclControl(GPIOA, ENABLE);
+
+    GPIO_Init(&GPIOLed_Handle);
+
+    while(1){
+    	GPIO_ToggleOutputPin(GPIOA,GPIO_PIN_5);
+    	delay();
+    }
+
+
+
+    return 0;
+
 }
