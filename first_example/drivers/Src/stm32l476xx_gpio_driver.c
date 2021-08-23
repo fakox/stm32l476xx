@@ -81,7 +81,37 @@ void GPIO_Init(GPIO_Handle_t * pGPIO_Handle){
 
 	}
 	else{
-		//IT
+
+		if(pGPIO_Handle->GPIO_PinConfig.GPIO_PinMode==GPIO_MODE_IT_FT){
+			EXTI->FTSR1|=1<<pGPIO_Handle->GPIO_PinConfig.GPIO_PinNumber;
+			EXTI->RTSR1 &= ~(1<<pGPIO_Handle->GPIO_PinConfig.GPIO_PinNumber);
+
+
+		}
+		else if(pGPIO_Handle->GPIO_PinConfig.GPIO_PinMode==GPIO_MODE_IT_RT){
+			EXTI->RTSR1 |= 1<<pGPIO_Handle->GPIO_PinConfig.GPIO_PinNumber;
+			EXTI->FTSR1 &= ~(1<<pGPIO_Handle->GPIO_PinConfig.GPIO_PinNumber);
+
+		}
+		else if(pGPIO_Handle->GPIO_PinConfig.GPIO_PinMode==GPIO_MODE_IT_RFT){
+			EXTI->FTSR1|=1<<pGPIO_Handle->GPIO_PinConfig.GPIO_PinNumber;
+			EXTI->RTSR1|=1<<pGPIO_Handle->GPIO_PinConfig.GPIO_PinNumber;
+
+		}
+		else{
+
+		}
+
+		uint8_t portcode= GPIOBD_TO_PORT(pGPIO_Handle->pGPIOx);
+		uint8_t index=pGPIO_Handle->GPIO_PinConfig.GPIO_PinNumber/4;
+		uint8_t temp=(pGPIO_Handle->GPIO_PinConfig.GPIO_PinNumber)%4;
+
+		SYSCFG->EXTICR_1_4[index]=portcode<<4*temp;
+		SYSCFG_PCLK_EN();
+
+		EXTI->IMR1|=(1<<pGPIO_Handle->GPIO_PinConfig.GPIO_PinNumber);
+
+
 	}
 
 	temp=(pGPIO_Handle->GPIO_PinConfig.GPIO_PinSpeed)<<(2*(pGPIO_Handle->GPIO_PinConfig.GPIO_PinNumber));
@@ -242,5 +272,41 @@ void GPIO_ToggleOutputPin(GPIO_RegDef_t* pGPIOx, uint8_t PinNumber){
 
 
 /*IRQ Configuration and Handling*/
-void GPIO_Config(uint8_t IRQNumber, uint8_t IRQPriority, uint8_t EnorDi);
+void GPIO_IRQConfig(uint8_t IRQNumber, uint8_t IRQPriority, uint8_t EnorDi){
+	if(EnorDi==ENABLE){
+		if(IRQNumber<=31){
+			*NVIC_ISER0|=1<<IRQNumber;
+
+		}
+		else if(IRQNumber>31 && IRQNumber<64 ){
+			*NVIC_ISER1|=1<<(IRQNumber%32);
+
+		}
+		else if(IRQNumber>=64 && IRQNumber<96 ){
+			*NVIC_ISER2|=1<<(IRQNumber%64);
+
+		}
+		else{
+
+		}
+	}
+	else{
+		if(IRQNumber<=31){
+			*NVIC_ICER0|=1<<IRQNumber;
+
+		}
+		else if(IRQNumber>=31 && IRQNumber<64 ){
+			*NVIC_ICER0|=1<<(IRQNumber%32);
+
+		}
+		else if(IRQNumber>=64 && IRQNumber<96 ){
+			*NVIC_ICER0|=1<<(IRQNumber%64);
+
+		}
+		else{
+
+		}
+
+	}
+}
 void GPIO_Handling(uint8_t PinNumber);

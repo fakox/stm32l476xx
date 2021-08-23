@@ -33,9 +33,9 @@
 #define GPIO_MODE_GEN_OUTPUT 	1
 #define GPIO_MODE_ALT 			2
 #define GPIO_MODE_ANALOG 		3
-#define GPIO_MODE_IT_FT 		4
-#define GPIO_MODE_IT_RT 		5
-#define GPIO_MODE_IT_RFT 		6
+#define GPIO_MODE_IT_FT 		4 //Falling Edge detection
+#define GPIO_MODE_IT_RT 		5 //Rising Edge Detection
+#define GPIO_MODE_IT_RFT 		6// Falling or Rising Detection
 
 /*@GPIO_OPTypes*/
 #define GPIO_OPTYPE_PP 			0
@@ -87,7 +87,7 @@ void GPIO_WriteToOutputPort(GPIO_RegDef_t* pGPIOx,uint16_t value);
 void GPIO_ToggleOutputPin(GPIO_RegDef_t* pGPIOx, uint8_t PinNumber);
 
 /*IRQ Configuration and Handling*/
-void GPIO_Config(uint8_t IRQNumber, uint8_t IRQPriority, uint8_t EnorDi);
+void GPIO_IRQConfig(uint8_t IRQNumber, uint8_t IRQPriority, uint8_t EnorDi);
 void GPIO_Handling(uint8_t PinNumber);
 
 
