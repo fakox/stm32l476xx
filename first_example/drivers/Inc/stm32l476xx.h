@@ -30,6 +30,17 @@
 #define NVIC_ICER6					((__vo uint32_t*)0xE000E198)
 #define NVIC_ICER7					((__vo uint32_t*)0xE000E19C)
 
+#define NVIC_PR_BASE_ADD			((__vo uint32_t*)0xE000E400)
+#define NO_PR_BITS_IMPLEMENTED		4
+
+#define EXTI0_NVIC					6
+#define EXTI1_NVIC					7
+#define EXTI2_NVIC					8
+#define EXTI3_NVIC					9
+#define EXTI4_NVIC					10
+#define EXTI5_9_NVIC				23
+#define EXTI10_15_NVIC				40
+
 /*MEMORY BASEADDRESS*/
 #define BASE_ADD_FLASH				0x08000000U
 #define BASE_ADD_SRAM1				0x20000000U //96 Kbytes
