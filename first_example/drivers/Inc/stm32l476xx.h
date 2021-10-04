@@ -262,7 +262,23 @@ typedef struct{
 #define IRQ_EXTI_9_5		23
 #define IRQ_EXTI_15_10		40
 
-
+#define IRQ_PR_NO_1			1
+#define IRQ_PR_NO_2			2
+#define IRQ_PR_NO_3			3
+#define IRQ_PR_NO_4			4
+#define IRQ_PR_NO_5			5
+#define IRQ_PR_NO_6			6
+#define IRQ_PR_NO_7			7
+#define IRQ_PR_NO_8			8
+#define IRQ_PR_NO_9			9
+#define IRQ_PR_NO_10		10
+#define IRQ_PR_NO_11		11
+#define IRQ_PR_NO_12		12
+#define IRQ_PR_NO_13		13
+#define IRQ_PR_NO_14		14
+#define IRQ_PR_NO_15		15
+#define IRQ_PR_NO_16		16
+#define IRQ_PR_NO_17		17
 
 
 
