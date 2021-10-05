@@ -30,45 +30,7 @@ void delay(){
 }
 int main(void)
 {
-    GPIO_Handle_t GPIOLed_Handle;
-    GPIOLed_Handle.GPIO_PinConfig.GPIO_PinNumber=GPIO_PIN_5;
-    GPIOLed_Handle.GPIO_PinConfig.GPIO_PinMode=GPIO_MODE_GEN_OUTPUT;
-    GPIOLed_Handle.GPIO_PinConfig.GPIO_OPType=GPIO_OPTYPE_PP;
-    GPIOLed_Handle.GPIO_PinConfig.GPIO_PinSpeed=GPIO_SPEED_HIGH;
-    GPIOLed_Handle.GPIO_PinConfig.GPIO_PinPuPdControl=GPIO_PIN_NOPU_NOPD;
-    GPIOLed_Handle.pGPIOx=GPIOA;
-    GPIO_PeriCloclControl(GPIOA, ENABLE);
-    GPIO_Init(&GPIOLed_Handle);
-
-    GPIO_Handle_t GPIOButton_Handle;
-    GPIOButton_Handle.GPIO_PinConfig.GPIO_PinNumber=GPIO_PIN_9;
-    GPIOButton_Handle.GPIO_PinConfig.GPIO_PinMode=GPIO_MODE_IT_FT;
-    GPIOButton_Handle.GPIO_PinConfig.GPIO_PinSpeed=GPIO_SPEED_HIGH;
-    GPIOButton_Handle.GPIO_PinConfig.GPIO_PinPuPdControl=GPIO_PIN_PULL_UP;
-    GPIOButton_Handle.pGPIOx=GPIOA;
-    GPIO_PeriCloclControl(GPIOA, ENABLE);
-    GPIO_Init(&GPIOButton_Handle);
-
-    GPIO_IRQITConfig(EXTI5_9_NVIC,ENABLE); //
-
-    while(1){
-
-    }
-    /*while(1){
-    	if(GPIO_ReadFromInputPin(GPIOA,GPIO_PIN_9)==0){
-    		GPIO_ToggleOutputPin(GPIOA,GPIO_PIN_5);
-    		delay();
-    	}
-    }
-    */
-
 
     return 0;
 
-}
-
-void EXTI9_5_IRQHandler(void){
-	delay();
-	GPIO_Handling(9);
-	GPIO_ToggleOutputPin(GPIOA,GPIO_PIN_5);
 }

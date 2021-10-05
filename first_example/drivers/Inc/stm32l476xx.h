@@ -40,6 +40,9 @@
 #define EXTI4_NVIC					10
 #define EXTI5_9_NVIC				23
 #define EXTI10_15_NVIC				40
+#define EXTI_SPI1_NVIC				35
+#define EXTI_SPI2_NVIC				36
+#define EXTI_SPI3_NVIC				51
 
 /*MEMORY BASEADDRESS*/
 #define BASE_ADD_FLASH				0x08000000U
@@ -235,22 +238,8 @@ typedef struct{
 	uint32_t PR2;
 }EXTI_RegDef_t;
 
+
 #define EXTI				((EXTI_RegDef_t*)EXTI_BASE_ADD)
-
-
-typedef struct{
-	uint32_t MEMRMP;
-	uint32_t CFGR1;
-	uint32_t EXTICR_1_4[4];
-	uint32_t SCSR;
-	uint32_t CFGR2;
-	uint32_t SWPR;
-	uint32_t SKR;
-}SYSCFG_RegDef_t;
-
-#define SYSCFG 				((SYSCFG_RegDef_t*)SYSCFG_BASE_ADD)
-
-
 
 /*IRQ Numbers for specific MCU*/
 
@@ -281,6 +270,83 @@ typedef struct{
 #define IRQ_PR_NO_17		17
 
 
+typedef struct{
+	uint32_t MEMRMP;
+	uint32_t CFGR1;
+	uint32_t EXTICR_1_4[4];
+	uint32_t SCSR;
+	uint32_t CFGR2;
+	uint32_t SWPR;
+	uint32_t SKR;
+}SYSCFG_RegDef_t;
+
+#define SYSCFG 				((SYSCFG_RegDef_t*)SYSCFG_BASE_ADD)
+
+
+
+
+
+/* Peripheral structure for SPI*/
+typedef struct
+{
+	__vo uint32_t CR1;
+	__vo uint32_t CR2;
+	__vo uint32_t SR;
+	__vo uint32_t DR;
+	__vo uint32_t CRCPR;
+	__vo uint32_t RXCRCR;
+	__vo uint32_t TXCRCR;
+
+}SPI_RegDef_t;
+
+#define SPI1				((SPI_RegDef_t*)SPI1_BASE_ADD)
+#define SPI2				((SPI_RegDef_t*)SPI2_BASE_ADD)
+#define SPI3				((SPI_RegDef_t*)SPI3_BASE_ADD)
+
+/**************************************************************/
+/*               SPI Register bit positions                   */
+/**************************************************************/
+/*SPI CR1*/
+#define SPI_BP_CPHA					0
+#define SPI_BP_CPOL					1
+#define SPI_BP_MSTR					2
+#define SPI_BP_BR					3
+#define SPI_BP_SPE					6
+#define SPI_BP_LSBFIRST				7
+#define SPI_BP_SSI					8
+#define SPI_BP_SSM					9
+#define SPI_BP_RXONLY				10
+#define SPI_BP_CRCL					11
+#define SPI_BP_CRCNEXT				12
+#define SPI_BP_CRCEN				13
+#define SPI_BP_BIDIOE				14
+#define SPI_BP_BIDImode				15
+/*SP1 CR2*/
+#define SPI_BP_RXDMAEN				0
+#define SPI_BP_TXDMAEN				1
+#define SPI_BP_SSOE					2
+#define SPI_BP_NSSP					3
+#define SPI_BP_FRF					4
+#define SPI_BP_ERRIE				5
+#define SPI_BP_RXNEIE				6
+#define SPI_BP_TXEIE				7
+#define SPI_BP_DS					8
+#define SPI_BP_FRX_TH				12
+#define SPI_BP_LDMA_RX				13
+#define SPI_BP_LDMA_TX				14
+/*SP1 SR*/
+#define SPI_BP_RXNE					0
+#define SPI_BP_TXE					1
+#define SPI_BP_CRCERR				4
+#define SPI_BP_MODF					5
+#define SPI_BP_OVR					6
+#define SPI_BP_BSY					7
+#define SPI_BP_FRE					8
+#define SPI_BP_FRLVL				9
+#define SPI_BP_FTLVL				11
+/******************************************************************/
+
+
 
 #define ENABLE 				1
 #define DISABLE 			0
@@ -288,7 +354,10 @@ typedef struct{
 #define RESET 				DISABLE
 #define GPIO_PIN_SET		SET
 #define GPIO_PIN_RESET		RESET
+#define FLAG_RESET			RESET
+#define FLAG_SET			SET
 
 #include "stm32l476xx_gpio_driver.h"
+#include "stm32l476xx_spi_driver.h"
 
 #endif /* INC_STM32L476XX_H_ */
