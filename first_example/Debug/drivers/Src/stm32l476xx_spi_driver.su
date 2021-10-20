@@ -1,5 +1,8 @@
 stm32l476xx_spi_driver.c:10:6:SPI_PeriCloclControl	16	static
 stm32l476xx_spi_driver.c:27:6:SPI_Init	24	static
-stm32l476xx_spi_driver.c:50:6:SPI_DeInit	16	static
-stm32l476xx_spi_driver.c:56:9:GetFlagStatus	16	static
-stm32l476xx_spi_driver.c:65:6:SPI_SendData	24	static
+stm32l476xx_spi_driver.c:52:6:SPI_DeInit	16	static
+stm32l476xx_spi_driver.c:58:6:SPI_Control	16	static
+stm32l476xx_spi_driver.c:67:6:SPI_SSI_Control	16	static
+stm32l476xx_spi_driver.c:76:6:SPI_SSOE_Control	16	static
+stm32l476xx_spi_driver.c:88:9:GetFlagStatus	16	static
+stm32l476xx_spi_driver.c:97:6:SPI_SendData	24	static

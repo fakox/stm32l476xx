@@ -28,6 +28,7 @@ void SPI_Init(SPI_Handle_t * pSPI_Handle){
 	uint32_t temp=0;
 
 	temp|=((pSPI_Handle->SPI_Config.SPI_DeviceMode) << 2);
+
 	if(pSPI_Handle->SPI_Config.SPI_BusConfig==SPI_BCONFIG_FD){
 		temp&=~(1<<15);
 	}else if(pSPI_Handle->SPI_Config.SPI_BusConfig==SPI_BCONFIG_HD){
@@ -44,10 +45,41 @@ void SPI_Init(SPI_Handle_t * pSPI_Handle){
 	temp|=((pSPI_Handle->SPI_Config.SPI_CPOL) << 1);
 	temp|=((pSPI_Handle->SPI_Config.SPI_DFF) << 11);
 	temp|=((pSPI_Handle->SPI_Config.SPI_Speed) << 3);
-
+	temp|=((pSPI_Handle->SPI_Config.SPI_SSM) << 9);
+	pSPI_Handle->pSPIx->CR1&=~(0x7FFF);
 	pSPI_Handle->pSPIx->CR1=temp;
 }
 void SPI_DeInit(SPI_RegDef_t* pSPIx){
+
+}
+
+/*Enable SPI*/
+
+void SPI_Control(SPI_RegDef_t* pSPIx, uint8_t EnorDi){
+	if (EnorDi==ENABLE ){
+		pSPIx->CR1|=(1<<SPI_BP_SPE);
+	}
+	else{
+		pSPIx->CR1&=~(1<<SPI_BP_SPE);
+	}
+
+}
+void SPI_SSI_Control(SPI_RegDef_t* pSPIx, uint8_t EnorDi){
+	if (EnorDi==ENABLE ){
+		pSPIx->CR1|=(1<<SPI_BP_SSI);
+	}
+	else{
+		pSPIx->CR1&=~(1<<SPI_BP_SSI);
+	}
+
+}
+void SPI_SSOE_Control(SPI_RegDef_t* pSPIx, uint8_t EnorDi){
+	if (EnorDi==ENABLE ){
+			pSPIx->CR1|=(1<<SPI_BP_SSOE);
+		}
+		else{
+			pSPIx->CR1&=~(1<<SPI_BP_SSOE);
+		}
 
 }
 
@@ -64,7 +96,9 @@ uint8_t GetFlagStatus(SPI_RegDef_t* pSPIx, uint32_t FLAGNAME){
 
 void SPI_SendData(SPI_RegDef_t* pSPIx, uint8_t* pTXBuffer, uint32_t len){
 	while(len>0){
-		while(GetFlagStatus(pSPIx,SPI_BP_TXE) == FLAG_RESET);
+		while(GetFlagStatus(pSPIx,SPI_BP_TXE) == FLAG_RESET){
+
+		}
 		if((pSPIx->CR1 & (1<<11))!= 0){
 			pSPIx->DR=*((uint16_t *)pTXBuffer);
 			len--;

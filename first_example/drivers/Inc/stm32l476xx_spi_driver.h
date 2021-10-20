@@ -62,6 +62,9 @@ typedef struct
 
 /*SPI CLCK Control*/
 void SPI_PeriCloclControl(SPI_RegDef_t* pSPIx,uint8_t EnorDi);
+void SPI_Control(SPI_RegDef_t* pSPIx, uint8_t EnorDi);
+void SPI_SSI_Control(SPI_RegDef_t* pSPIx, uint8_t EnorDi);
+void SPI_SSOE_Control(SPI_RegDef_t* pSPIx, uint8_t EnorDi);
 /*Init De-Init*/
 void SPI_Init(SPI_Handle_t * pSPI_Handle);
 void SPI_DeInit(SPI_RegDef_t* pSPIx);

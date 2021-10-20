@@ -28,9 +28,60 @@
 void delay(){
 	for (uint32_t i=0; i<120000;i++);
 }
+
+/* SPI1_ MOSI = PA7 */
+/* SPI1_ MISO = PA6 */
+/* SPI1_ CLK  = PA5 */
+/* SPI1_ NSS */
+void SPI_GPIO_Inits(void){
+	GPIO_Handle_t SPI_GPIO_Handle;
+	SPI_GPIO_Handle.GPIO_PinConfig.GPIO_PinMode=GPIO_MODE_ALT;
+	SPI_GPIO_Handle.GPIO_PinConfig.GPIO_PinAltFuncMode=5;
+	SPI_GPIO_Handle.GPIO_PinConfig.GPIO_OPType=GPIO_OPTYPE_PP;
+	SPI_GPIO_Handle.GPIO_PinConfig.GPIO_PinPuPdControl=GPIO_PIN_NOPU_NOPD;
+	SPI_GPIO_Handle.GPIO_PinConfig.GPIO_PinSpeed=GPIO_SPEED_HIGH;
+	SPI_GPIO_Handle.pGPIOx=GPIOA;
+	GPIO_PeriCloclControl(GPIOA, ENABLE);
+	//SCK
+	SPI_GPIO_Handle.GPIO_PinConfig.GPIO_PinNumber=GPIO_PIN_5;
+	GPIO_Init(&SPI_GPIO_Handle);
+	//MISO
+	//SPI_GPIO_Handle.GPIO_PinConfig.GPIO_PinNumber=GPIO_PIN_6;
+	//GPIO_Init(&SPI_GPIO_Handle);
+	//MOSI
+	SPI_GPIO_Handle.GPIO_PinConfig.GPIO_PinNumber=GPIO_PIN_7;
+	GPIO_Init(&SPI_GPIO_Handle);
+
+}
+void SPI1_Inits(void){
+
+	SPI_PeriCloclControl(SPI1, ENABLE);
+	SPI_Handle_t SPI_Handle;
+	SPI_Handle.pSPIx=SPI1;
+	SPI_Handle.SPI_Config.SPI_DeviceMode=SPI_MASTER;
+	SPI_Handle.SPI_Config.SPI_BusConfig=SPI_BCONFIG_FD;
+	SPI_Handle.SPI_Config.SPI_Speed=SR_BR_PCLK_DIV_32;
+	SPI_Handle.SPI_Config.SPI_DFF=SPI_DFF_8BIT;
+	SPI_Handle.SPI_Config.SPI_CPHA=SPI_CPHA_0;
+	SPI_Handle.SPI_Config.SPI_CPOL=SPI_CPOL_0;
+	SPI_Handle.SPI_Config.SPI_SSM=SPI_SSM_EN;
+
+	SPI_Init(&SPI_Handle);
+
+}
+
+
 int main(void)
 {
+	char u_data[]="A";
+	SPI_GPIO_Inits();
+	SPI1_Inits();
+	SPI_SSI_Control(SPI1,ENABLE);
+	SPI_Control(SPI1,ENABLE);
 
+	while(1){
+		SPI_SendData(SPI1,(uint8_t*)u_data, 1);
+	}
     return 0;
 
 }
