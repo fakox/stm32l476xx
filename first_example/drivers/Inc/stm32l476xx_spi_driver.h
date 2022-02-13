@@ -20,7 +20,7 @@
 #define SPI_BCONFIG_S_RX			3
 /*@SPI_DFF*/
 #define SPI_DFF_8BIT				0
-#define SPI_CPHA_16BIT				1
+#define SPI_DFF_16BIT				1
 /*@SPI_CPHA*/
 #define SPI_CPHA_1					1
 #define SPI_CPHA_0					0
@@ -78,4 +78,6 @@ void SPI_ReceiveData(SPI_RegDef_t* pSPIx, uint8_t* pRXBuffer, uint32_t len);
 void SPI_IRQITConfig(uint8_t IRQNumber, uint8_t EnorDi);
 void SPI_Handling(SPI_Handle_t pSPI_Handle);
 void SPI_IRQPRConfig(uint8_t IRQNumber, uint32_t IRQPriority);
+
+uint8_t GetFlagStatus(SPI_RegDef_t* pSPIx, uint32_t FLAGNAME);
 #endif /* INC_STM32L476XX_SPI_DRIVER_H_ */

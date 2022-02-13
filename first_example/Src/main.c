@@ -18,6 +18,7 @@
  */
 
 #include <stdint.h>
+#include <string.h>
 #include "stm32l476xx.h"
 
 
@@ -26,13 +27,14 @@
 #endif
 
 void delay(){
-	for (uint32_t i=0; i<120000;i++);
+	for (uint32_t i=0; i<500000;i++);
 }
 
-/* SPI1_ MOSI = PA7 */
-/* SPI1_ MISO = PA6 */
-/* SPI1_ CLK  = PA5 */
-/* SPI1_ NSS */
+/* SPI1_ NSS =  PA4 A2  */
+/* SPI1_ CLK  = PA5 D13 */
+/* SPI1_ MISO = PA6 D12 */
+/* SPI1_ MOSI = PA7 D11 */
+
 void SPI_GPIO_Inits(void){
 	GPIO_Handle_t SPI_GPIO_Handle;
 	SPI_GPIO_Handle.GPIO_PinConfig.GPIO_PinMode=GPIO_MODE_ALT;
@@ -42,15 +44,25 @@ void SPI_GPIO_Inits(void){
 	SPI_GPIO_Handle.GPIO_PinConfig.GPIO_PinSpeed=GPIO_SPEED_HIGH;
 	SPI_GPIO_Handle.pGPIOx=GPIOA;
 	GPIO_PeriCloclControl(GPIOA, ENABLE);
+
+	//NSS
+	SPI_GPIO_Handle.GPIO_PinConfig.GPIO_PinNumber=GPIO_PIN_4;
+	GPIO_Init(&SPI_GPIO_Handle);
+
 	//SCK
 	SPI_GPIO_Handle.GPIO_PinConfig.GPIO_PinNumber=GPIO_PIN_5;
 	GPIO_Init(&SPI_GPIO_Handle);
+
 	//MISO
 	//SPI_GPIO_Handle.GPIO_PinConfig.GPIO_PinNumber=GPIO_PIN_6;
 	//GPIO_Init(&SPI_GPIO_Handle);
+
 	//MOSI
 	SPI_GPIO_Handle.GPIO_PinConfig.GPIO_PinNumber=GPIO_PIN_7;
 	GPIO_Init(&SPI_GPIO_Handle);
+
+
+
 
 }
 void SPI1_Inits(void){
@@ -60,28 +72,56 @@ void SPI1_Inits(void){
 	SPI_Handle.pSPIx=SPI1;
 	SPI_Handle.SPI_Config.SPI_DeviceMode=SPI_MASTER;
 	SPI_Handle.SPI_Config.SPI_BusConfig=SPI_BCONFIG_FD;
-	SPI_Handle.SPI_Config.SPI_Speed=SR_BR_PCLK_DIV_32;
+	SPI_Handle.SPI_Config.SPI_Speed=SR_BR_PCLK_DIV_2;
 	SPI_Handle.SPI_Config.SPI_DFF=SPI_DFF_8BIT;
 	SPI_Handle.SPI_Config.SPI_CPHA=SPI_CPHA_0;
 	SPI_Handle.SPI_Config.SPI_CPOL=SPI_CPOL_0;
-	SPI_Handle.SPI_Config.SPI_SSM=SPI_SSM_EN;
+	SPI_Handle.SPI_Config.SPI_SSM=SPI_SSM_DI;
 
 	SPI_Init(&SPI_Handle);
 
 }
 
+void Button_GPIO_Inits(void){
+	GPIO_Handle_t GPIO_Bttn ={0};
+	GPIO_Bttn.GPIO_PinConfig.GPIO_PinMode=GPIO_MODE_INPUT;
+	GPIO_Bttn.GPIO_PinConfig.GPIO_PinPuPdControl=GPIO_PIN_NOPU_NOPD;
+	GPIO_Bttn.GPIO_PinConfig.GPIO_PinSpeed=GPIO_SPEED_HIGH;
+	GPIO_Bttn.pGPIOx=GPIOA;
+	GPIO_Bttn.GPIO_PinConfig.GPIO_PinNumber=GPIO_PIN_12;
+	GPIO_PeriCloclControl(GPIOA, ENABLE);
+	GPIO_Init(&GPIO_Bttn);
+
+}
 
 int main(void)
 {
-	char u_data[]="A";
+	char u_data[]="Hola amigo";
+
+	Button_GPIO_Inits();
 	SPI_GPIO_Inits();
 	SPI1_Inits();
-	SPI_SSI_Control(SPI1,ENABLE);
-	SPI_Control(SPI1,ENABLE);
+
+	SPI_SSOE_Control(SPI1, ENABLE); //Enable Output in master mode and SPI enabled.
+	//SPI_SSI_Control(SPI1,ENABLE); Not required for DISABLED SSM
 
 	while(1){
-		SPI_SendData(SPI1,(uint8_t*)u_data, 1);
+		while(!GPIO_ReadFromInputPin(GPIOA,GPIO_PIN_12)){}
+		delay();
+		SPI_Control(SPI1,ENABLE);
+		uint8_t dlen=strlen(u_data);
+
+		SPI_SendData(SPI1,&dlen, 1);
+		while(GetFlagStatus(SPI1, SPI_BP_BSY)){}
+		SPI_SendData(SPI1,(uint8_t*)u_data, strlen(u_data));
+		while(GetFlagStatus(SPI1, SPI_BP_BSY)){}
+		SPI_Control(SPI1,DISABLE);
+
+
 	}
+
+
+
     return 0;
 
 }

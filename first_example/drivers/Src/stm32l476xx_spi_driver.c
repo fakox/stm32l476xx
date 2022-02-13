@@ -43,11 +43,13 @@ void SPI_Init(SPI_Handle_t * pSPI_Handle){
 	}
 	temp|=((pSPI_Handle->SPI_Config.SPI_CPHA) << 0);
 	temp|=((pSPI_Handle->SPI_Config.SPI_CPOL) << 1);
-	temp|=((pSPI_Handle->SPI_Config.SPI_DFF) << 11);
 	temp|=((pSPI_Handle->SPI_Config.SPI_Speed) << 3);
 	temp|=((pSPI_Handle->SPI_Config.SPI_SSM) << 9);
 	pSPI_Handle->pSPIx->CR1&=~(0x7FFF);
 	pSPI_Handle->pSPIx->CR1=temp;
+
+	pSPI_Handle->pSPIx->CR2&=~(0x7FFF);
+	pSPI_Handle->pSPIx->CR2=0x0700;
 }
 void SPI_DeInit(SPI_RegDef_t* pSPIx){
 
@@ -96,18 +98,19 @@ uint8_t GetFlagStatus(SPI_RegDef_t* pSPIx, uint32_t FLAGNAME){
 
 void SPI_SendData(SPI_RegDef_t* pSPIx, uint8_t* pTXBuffer, uint32_t len){
 	while(len>0){
-		while(GetFlagStatus(pSPIx,SPI_BP_TXE) == FLAG_RESET){
-
-		}
-		if((pSPIx->CR1 & (1<<11))!= 0){
+		while(GetFlagStatus(pSPIx,SPI_BP_TXE) == FLAG_RESET);
+		if((pSPIx->CR2 & (0xF<<8))== 0x0F00){
 			pSPIx->DR=*((uint16_t *)pTXBuffer);
 			len--;
 			len--;
 			(uint16_t *)pTXBuffer++;
 		}
-		pSPIx->DR=*pTXBuffer;
-		len--;
-		(uint8_t *)pTXBuffer++;
+		else{
+			*((uint8_t *)&(pSPIx->DR))=*((uint8_t *)pTXBuffer);
+			len--;
+			pTXBuffer++;
+		}
+
 	}
 
 }
