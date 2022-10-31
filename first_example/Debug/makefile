@@ -65,7 +65,7 @@ main-build: first_example.elf secondary-outputs
 
 # Tool invocations
 first_example.elf: $(OBJS) $(USER_OBJS) C:\Users\franc\OneDrive\Documentos\STM32\stm32l476xx\first_example\STM32L476RGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "first_example.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\franc\OneDrive\Documentos\STM32\stm32l476xx\first_example\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="first_example.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "first_example.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\franc\OneDrive\Documentos\STM32\stm32l476xx\first_example\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="first_example.map" -Wl,--gc-sections -static -specs=rdimon.specs -lrdimon --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

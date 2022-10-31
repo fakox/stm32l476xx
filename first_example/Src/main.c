@@ -26,8 +26,37 @@
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 
+extern void initialise_monitor_handles(void);
+#define NACK 0xA5
+#define ACK 0xF5
+
+
+//command codes
+#define COMMAND_LED_CTRL          0x50
+#define COMMAND_SENSOR_READ       0x51
+#define COMMAND_LED_READ          0x52
+#define COMMAND_PRINT           0x53
+#define COMMAND_ID_READ         0x54
+
+#define LED_ON     1
+#define LED_OFF    0
+
+//arduino analog pins
+#define ANALOG_PIN0   0
+#define ANALOG_PIN1   1
+#define ANALOG_PIN2   2
+#define ANALOG_PIN3   3
+#define ANALOG_PIN4   4
+
+
+#define LED_PIN_9	9
+
 void delay(){
-	for (uint32_t i=0; i<500000;i++);
+	for (uint32_t i=0; i<50000;i++);
+}
+
+void delay2(){
+	for (uint32_t i=0; i<5000000;i++);
 }
 
 /* SPI1_ NSS =  PA4 A2  */
@@ -54,8 +83,8 @@ void SPI_GPIO_Inits(void){
 	GPIO_Init(&SPI_GPIO_Handle);
 
 	//MISO
-	//SPI_GPIO_Handle.GPIO_PinConfig.GPIO_PinNumber=GPIO_PIN_6;
-	//GPIO_Init(&SPI_GPIO_Handle);
+	SPI_GPIO_Handle.GPIO_PinConfig.GPIO_PinNumber=GPIO_PIN_6;
+	GPIO_Init(&SPI_GPIO_Handle);
 
 	//MOSI
 	SPI_GPIO_Handle.GPIO_PinConfig.GPIO_PinNumber=GPIO_PIN_7;
@@ -94,9 +123,27 @@ void Button_GPIO_Inits(void){
 
 }
 
+uint8_t Check_ACK(uint8_t command) {
+	if(command==0xF5){
+		return 1;
+	}
+	return 0;
+}
+
+
+
 int main(void)
 {
-	char u_data[]="Hola amigo";
+	initialise_monitor_handles();
+	uint8_t cmd_w=0xff;
+	uint8_t cmd_param[2];
+	uint8_t cmd_data;
+	uint8_t cmd_r;
+	uint8_t analog_read;
+	uint8_t pin_state;
+	char *message=" Hola mundo\n";
+	char m10[12];
+	uint8_t len=0;
 
 	Button_GPIO_Inits();
 	SPI_GPIO_Inits();
@@ -104,24 +151,120 @@ int main(void)
 
 	SPI_SSOE_Control(SPI1, ENABLE); //Enable Output in master mode and SPI enabled.
 	//SPI_SSI_Control(SPI1,ENABLE); Not required for DISABLED SSM
-
-	while(1){
-		while(!GPIO_ReadFromInputPin(GPIOA,GPIO_PIN_12)){}
+	while (1){
+		printf("SPI initialize\n");
+		while(GPIO_ReadFromInputPin(GPIOA,GPIO_PIN_12)){};
 		delay();
 		SPI_Control(SPI1,ENABLE);
-		uint8_t dlen=strlen(u_data);
+		//<--------------------------------COMMAND LED CONTROL ---------------------------------->//
+		cmd_data=COMMAND_LED_CTRL;
+		SPI_SendData(SPI1,&cmd_data, 1);
+		SPI_ReceiveData(SPI1,  &cmd_r, 1);//dummy read - we are not expecting anything
+		delay();
+		SPI_SendData(SPI1,&cmd_w, 1);//dummy write to receive ack
+		SPI_ReceiveData(SPI1, &cmd_r, 1);
+		//Check if sent command is correct
+		delay();
+		delay();
+		if(Check_ACK(cmd_r)){
+				cmd_param[0]=LED_PIN_9;
+				cmd_param[1]=LED_ON;
+				SPI_SendData(SPI1,cmd_param, 2);
+		}
+		SPI_ReceiveData(SPI1,  &cmd_r, 2);
+		//wait for new command
+		while(GPIO_ReadFromInputPin(GPIOA,GPIO_PIN_12)){};
+		delay();
 
-		SPI_SendData(SPI1,&dlen, 1);
-		while(GetFlagStatus(SPI1, SPI_BP_BSY)){}
-		SPI_SendData(SPI1,(uint8_t*)u_data, strlen(u_data));
-		while(GetFlagStatus(SPI1, SPI_BP_BSY)){}
-		SPI_Control(SPI1,DISABLE);
+		//<--------------------------------COMMAND SENSOR READ ---------------------------------->//
+		cmd_data=COMMAND_SENSOR_READ;
+		SPI_SendData(SPI1,&cmd_data, 1);
+		SPI_ReceiveData(SPI1,  &cmd_r, 1);//dummy read - we are not expecting anything
+		delay();
+		SPI_SendData(SPI1,&cmd_w, 1);//dummy write to receive ack
+		SPI_ReceiveData(SPI1, &cmd_r, 1);
+		delay();
+		if(Check_ACK(cmd_r)){
+			cmd_param[0]=ANALOG_PIN0;
+			SPI_SendData(SPI1,cmd_param, 1);
 
+		}
+		SPI_ReceiveData(SPI1,  &cmd_r, 1);//dummy read
+		delay();
+		SPI_SendData(SPI1,&cmd_w, 1);//dummy write
+		SPI_ReceiveData(SPI1, &analog_read, 1);
+		printf("Analog read: %d\n",analog_read);
+		//wait for new command
+		while(GPIO_ReadFromInputPin(GPIOA,GPIO_PIN_12)){};
+		delay();
+		//<--------------------------------COMMAND LED READ ---------------------------------->//
+		cmd_data=COMMAND_LED_READ;
+		SPI_SendData(SPI1,&cmd_data, 1);
+		SPI_ReceiveData(SPI1,  &cmd_r, 1);//dummy read - we are not expecting anything
+		delay();
+		SPI_SendData(SPI1,&cmd_w, 1);//dummy write to receive ack
+		SPI_ReceiveData(SPI1, &cmd_r, 1);
+		delay();
+		if(Check_ACK(cmd_r)){
+			cmd_param[0]=LED_PIN_9;
+			SPI_SendData(SPI1,cmd_param, 1);
+			}
+		SPI_ReceiveData(SPI1,  &cmd_r, 1);//dummy read
+		delay();
+		SPI_SendData(SPI1,&cmd_w, 1);//dummy write
+		SPI_ReceiveData(SPI1, &pin_state, 1);
+		printf("Pin 9 state: %d\n",pin_state);
+		while(GPIO_ReadFromInputPin(GPIOA,GPIO_PIN_12)){};
+		delay();
+		//<--------------------------------COMMAND PRINT  ---------------------------------->//
+		cmd_data=COMMAND_PRINT;
+		SPI_SendData(SPI1,&cmd_data, 1);
+		SPI_ReceiveData(SPI1,  &cmd_r, 1);//dummy read - we are not expecting anything
+		delay();
+		SPI_SendData(SPI1,&cmd_w, 1);//dummy write to receive ack
+		SPI_ReceiveData(SPI1, &cmd_r, 1);
+		delay();
+		printf("ack: %u \n",cmd_r);
+		if(Check_ACK(cmd_r)){
+			len=strlen((char*)message);
+			SPI_SendData(SPI1,&len,1);
+			delay();
+			SPI_SendData(SPI1,(uint8_t*)message,len);
+			delay();
+			//SPI_ReceiveData(SPI1, &cmd_dummy_r, 1);
+			//delay();
+		}
+		SPI_ReceiveData(SPI1, &cmd_r, 1);
+		delay();
+		printf("Command ID read\n");
+		while(GPIO_ReadFromInputPin(GPIOA,GPIO_PIN_12)){};
+		//<--------------------------------COMMAND ID READ  ---------------------------------->//
+		SPI_CLR_OVR(SPI1);
+		//delay2();
+		SPI_ReceiveData(SPI1, &cmd_r, 1);
+		SPI_ReceiveData(SPI1, &cmd_r, 1);
+		cmd_data=COMMAND_ID_READ;
+		SPI_SendData(SPI1,&cmd_data, 1);
+		delay();
+		SPI_ReceiveData(SPI1, &cmd_r, 1);//dummy read - we are not expecting anything
+		delay();
+		printf("dummy: %u \n", cmd_r);
+		SPI_SendData(SPI1,&cmd_w, 1);//dummy write to receive ack
+		delay();
+		SPI_ReceiveData(SPI1, &cmd_r, 1);
+		printf("ack: %u \n",cmd_r);
+		if(Check_ACK(cmd_r)){
+			for(int i=0; i<10;i++){
+				SPI_SendData(SPI1,&cmd_w, 1);//dummy to receive caracters
+				delay();
+				SPI_ReceiveData(SPI1,(uint8_t*)&m10[i], 1);
+			}
+			m10[10]='\0';
+		}
+		printf("ID %s\n",m10);
 
 	}
-
-
-
+	SPI_Control(SPI1,DISABLE);
     return 0;
 
 }

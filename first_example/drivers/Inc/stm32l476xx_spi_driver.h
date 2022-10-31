@@ -72,6 +72,7 @@ void SPI_DeInit(SPI_RegDef_t* pSPIx);
 /*Data send and Receive*/
 
 void SPI_SendData(SPI_RegDef_t* pSPIx, uint8_t* pTXBuffer, uint32_t len);
+void SPI_CLR_OVR(SPI_RegDef_t* pSPIx);
 void SPI_ReceiveData(SPI_RegDef_t* pSPIx, uint8_t* pRXBuffer, uint32_t len);
 
 /*IRQ Handling*/

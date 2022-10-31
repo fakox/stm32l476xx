@@ -6,3 +6,5 @@ stm32l476xx_spi_driver.c:69:6:SPI_SSI_Control	16	static
 stm32l476xx_spi_driver.c:78:6:SPI_SSOE_Control	16	static
 stm32l476xx_spi_driver.c:90:9:GetFlagStatus	16	static
 stm32l476xx_spi_driver.c:99:6:SPI_SendData	24	static
+stm32l476xx_spi_driver.c:118:6:SPI_CLR_OVR	24	static
+stm32l476xx_spi_driver.c:125:6:SPI_ReceiveData	24	static
