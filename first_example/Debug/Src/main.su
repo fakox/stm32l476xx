@@ -1,7 +1,7 @@
 main.c:54:6:delay	16	static
 main.c:58:6:delay2	16	static
 main.c:67:6:SPI_GPIO_Inits	24	static
-main.c:97:6:SPI1_Inits	24	static
+main.c:97:6:SPI1_Inits	48	static
 main.c:114:6:Button_GPIO_Inits	24	static
 main.c:126:9:Check_ACK	16	static
 main.c:135:5:main	40	static

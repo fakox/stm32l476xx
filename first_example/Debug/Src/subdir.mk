@@ -5,15 +5,15 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../Src/main.c \
+../Src/main_SPI_IT.c \
 ../Src/sysmem.c 
 
 OBJS += \
-./Src/main.o \
+./Src/main_SPI_IT.o \
 ./Src/sysmem.o 
 
 C_DEPS += \
-./Src/main.d \
+./Src/main_SPI_IT.d \
 ./Src/sysmem.d 
 
 

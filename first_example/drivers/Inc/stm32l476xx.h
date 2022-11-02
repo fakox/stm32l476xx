@@ -7,10 +7,10 @@
 
 #ifndef INC_STM32L476XX_H_
 #define INC_STM32L476XX_H_
-
+#include <stddef.h>
 #include <stdint.h>
 #define __vo volatile
-
+#define __weak __attribute__((weak))
 
 #define NVIC_ISER0					((__vo uint32_t*)0xE000E100)
 #define NVIC_ISER1					((__vo uint32_t*)0xE000E104)
@@ -268,7 +268,7 @@ typedef struct{
 #define IRQ_PR_NO_15		15
 #define IRQ_PR_NO_16		16
 #define IRQ_PR_NO_17		17
-
+#define IRQ_PR_NO_42		42
 
 typedef struct{
 	uint32_t MEMRMP;
@@ -344,6 +344,8 @@ typedef struct
 #define SPI_BP_FRE					8
 #define SPI_BP_FRLVL				9
 #define SPI_BP_FTLVL				11
+
+
 /******************************************************************/
 
 

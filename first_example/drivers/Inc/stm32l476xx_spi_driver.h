@@ -40,6 +40,15 @@
 #define SPI_SSM_EN					1
 #define SPI_SSM_DI					0
 
+/*@Aplication states*/
+#define SPI_READY 					0
+#define SPI_BUSY_RX  				1
+#define SPI_BUSY_TX  				2
+/*@Aplication events*/
+#define SPI_EVENT_TX_CMPLT			1
+#define SPI_EVENT_RX_CMPLT			2
+#define SPI_EVENT_OVR_CMPLT			3
+#define SPI_EVENT_CRC_CMPLT			4
 
 typedef struct
 {
@@ -57,6 +66,12 @@ typedef struct
 {
 	SPI_RegDef_t* pSPIx;
 	SPI_Config_t SPI_Config;
+	uint8_t * pTX_Buffer;
+	uint8_t * pRX_Buffer;
+	uint32_t txLen;
+	uint32_t rxLen;
+	uint32_t txState;
+	uint32_t rxState;
 
 }SPI_Handle_t;
 
@@ -72,13 +87,16 @@ void SPI_DeInit(SPI_RegDef_t* pSPIx);
 /*Data send and Receive*/
 
 void SPI_SendData(SPI_RegDef_t* pSPIx, uint8_t* pTXBuffer, uint32_t len);
-void SPI_CLR_OVR(SPI_RegDef_t* pSPIx);
 void SPI_ReceiveData(SPI_RegDef_t* pSPIx, uint8_t* pRXBuffer, uint32_t len);
-
+void SPI_CLR_OVR(SPI_RegDef_t* pSPIx);
+uint8_t SPI_SendData_IT(SPI_Handle_t* pSPIHandle, uint8_t* pTXBuffer, uint32_t len);
+uint8_t SPI_ReceiveData_IT(SPI_Handle_t* pSPIHandle, uint8_t* pRXBuffer, uint32_t len);
 /*IRQ Handling*/
 void SPI_IRQITConfig(uint8_t IRQNumber, uint8_t EnorDi);
-void SPI_Handling(SPI_Handle_t pSPI_Handle);
+void SPI_IRQHandling(SPI_Handle_t *pSPI_Handle);
 void SPI_IRQPRConfig(uint8_t IRQNumber, uint32_t IRQPriority);
 
+
+void SPI_ApplicationEventCallback(SPI_Handle_t *pSPI_Handle,uint8_t AppEvent);
 uint8_t GetFlagStatus(SPI_RegDef_t* pSPIx, uint32_t FLAGNAME);
 #endif /* INC_STM32L476XX_SPI_DRIVER_H_ */
